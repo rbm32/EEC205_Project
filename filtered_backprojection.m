@@ -8,6 +8,7 @@ function reconstructed_image = filtered_backprojection(bscan, x, time, c)
     %   c - Speed of wave (e.g., 0.3 m/ns for EM waves in soil)
     %
     % Outputs:
+
     %   reconstructed_image - Reconstructed reflectivity image
     
     % Define reconstruction grid

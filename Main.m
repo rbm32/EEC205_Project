@@ -18,6 +18,7 @@ ground_z = .2;      % Ground level (normalized)
 ground_width = .2;  % Width of the ground surface in terms of x
 ground_reflectivity = 0.2; % Reflectivity of the ground
 
+
 % Custom pulse example (e.g., Gaussian pulse)
 t_pulse = linspace(-0.5, 0.5, 50);
 pulse = exp(-t_pulse.^2 / (2 * 0.1^2));

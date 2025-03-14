@@ -29,6 +29,7 @@ reconstructed_image = filtered_backprojection(bscan, x, time, c);
 
 %% Plot reconstructed image
 
+
 reconstructed_image_dB = 20 * log10(abs(reconstructed_image) + eps); % Avoid log(0)
 
 % Apply cutoff

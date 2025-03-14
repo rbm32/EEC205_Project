@@ -10,6 +10,7 @@ function g = create_reflectivity_matrix(image_size, targets, ground_z, ground_wi
     z = linspace(0, 2, image_size); % Range axis
     [X, Z] = meshgrid(x_grid, z);
     
+    
     % Initialize reflectivity matrix g
     g = zeros(image_size);
     
