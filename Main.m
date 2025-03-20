@@ -47,6 +47,7 @@ max_dB = max(reconstructed_image_dB(:));
 reconstructed_image_dB(reconstructed_image_dB < (max_dB - cutoff_dB)) = NaN;
 
 % Plot reconstructed image
+tiledlayout('horizontal');
 nexttile;
 imagesc(linspace(min(x), max(x), 100), linspace(0, max(time) * 0.3 / 2, 100), reconstructed_image_dB);
 xlabel('Antenna Position (m)');
@@ -65,4 +66,64 @@ title('Artificial B-scan (Custom Pulse)');
 colorbar;
 axis tight;
 colormap(tl, 'gray'); % Set B-scan colormap to gray
+
+
+%%
+
+
+function tof = compute_tof(x_a, h, x_b, z, epsilon_r, c)
+    % compute_tof calculates the time of flight (ToF) from an antenna to a buried object
+    % considering refraction at the air-ground interface.
+    %
+    % Inputs:
+    %   x_a       - Horizontal position of the antenna (m)
+    %   h         - Height of the antenna above ground (m)
+    %   x_b       - Horizontal position of the buried object (m)
+    %   z         - Depth of the buried object (m)
+    %   epsilon_r - Relative permittivity of the ground
+    %   c         - Speed of light in vacuum (m/s)
+    %
+    % Output:
+    %   tof       - Time of flight (seconds)
+
+    % Speed of light in the medium
+    v_ground = c / sqrt(epsilon_r);
+    
+    % Initial guess for the refraction point (midpoint)
+    x_r_guess = (x_a + x_b) / 2;
+
+    % Function to solve for x_r (Snell's Law constraint)
+    refraction_eq = @(x_r) snell_constraint(x_r, x_a, h, x_b, z, epsilon_r);
+
+    % Use fsolve to find the optimal x_r
+    options = optimset('Display', 'off');
+    x_r = fsolve(refraction_eq, x_r_guess, options);
+    
+    % Compute distances
+    d_air = 2 * sqrt(h^2 + (x_r - x_a)^2); % Distance from antenna to interface
+
+    d_ground = 2 * sqrt(z^2 + (x_b - x_r)^2); % Distance in the ground
+    
+    % Compute time of flight
+    t_air = d_air / c;
+    t_ground = d_ground / v_ground;
+    tof = t_air + t_ground;
+
+    % Display results
+    fprintf('Refraction Point: x_r = %.6f m\n', x_r);
+    fprintf('Time of Flight (ToF): %.6e seconds\n', tof);
+end
+
+function F = snell_constraint(x_r, x_a, h, x_b, z, epsilon_r)
+    % Constraint function for Snell's Law refraction point
+    theta_i = atan(abs(x_r - x_a) / h); % Incident angle
+    theta_t = asin(sin(theta_i) / sqrt(epsilon_r)); % Transmitted angle
+
+    % Constraint: Ensure the ground segment points correctly
+    F = tan(theta_t) * (x_b - x_r) - z;
+end
+
+
+
+
 

@@ -12,7 +12,6 @@ function [bscan, time, x] = generate_artificial_bscan(image_size, num_time_sampl
     %   t_max            - Maximum time value
     %   a                - Noise matrix (optional, size must match image_size)
     %
-    
     % Outputs:
     %   bscan - Simulated B-scan data (time samples x antenna positions)
 
